@@ -24,7 +24,11 @@ class FileStorage:
                     for key, obj in FileStorage.__objects.items()}
         with open(FileStorage.__file_path, "w") as f:
             json.dump(obj_dict, f)
-
+                def delete(self, obj=None):
+        """Delete obj from __objects if it is there."""
+        if obj is not None:
+            key = "{}.{}".format(type(obj).__name__, obj.id)
+            FileStorage.__objects.pop(key, None)
     def reload(self):
         """Deserialize the JSON file to __objects, if it exists."""
         from models.base_model import BaseModel
