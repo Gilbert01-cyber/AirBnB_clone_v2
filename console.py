@@ -66,8 +66,8 @@ class HBNBCommand(cmd.Cmd):
             kwargs[key] = value
         new_instance = eval(args[0])(**kwargs)
         new_instance.save()
-        print(new_instance.id)        
-   
+        print(new_instance.id)
+
     def do_show(self, arg):
         """Print the string representation of an instance."""
         args = arg.split()
