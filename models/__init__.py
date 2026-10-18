@@ -1,6 +1,11 @@
 #!/usr/bin/python3
-"""Initialize the models package with a unique FileStorage instance."""
-from models.engine.file_storage import FileStorage
+"""Initialize the models package."""
+from os import getenv
 
-storage = FileStorage()
+if getenv("HBNB_TYPE_STORAGE") == "db":
+    from models.engine.db_storage import DBStorage
+    storage = DBStorage()
+else:
+    from models.engine.file_storage import FileStorage
+    storage = FileStorage()
 storage.reload()
