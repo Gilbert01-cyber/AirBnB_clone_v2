@@ -40,7 +40,7 @@ class HBNBCommand(cmd.Cmd):
         return True
 
     def do_create(self, arg):
-        """Create a new instance of a class, save it, print its id."""
+        """Create a new instance with optional key=value parameters."""
         args = arg.split()
         if len(args) == 0:
             print("** class name missing **")
@@ -48,10 +48,26 @@ class HBNBCommand(cmd.Cmd):
         if args[0] not in HBNBCommand.__classes:
             print("** class doesn't exist **")
             return
-        new_instance = eval(args[0])()
+        kwargs = {}
+        for pair in args[1:]:
+            if "=" not in pair:
+                continue
+            key, value = pair.split("=", 1)
+            if len(value) >= 2 and value[0] == '"' and value[-1] == '"':
+                value = value[1:-1].replace('\\"', '"').replace("_", " ")
+            else:
+                try:
+                    value = int(value)
+                except ValueError:
+                    try:
+                        value = float(value)
+                    except ValueError:
+                        continue
+            kwargs[key] = value
+        new_instance = eval(args[0])(**kwargs)
         new_instance.save()
-        print(new_instance.id)
-
+        print(new_instance.id)        
+   
     def do_show(self, arg):
         """Print the string representation of an instance."""
         args = arg.split()
@@ -87,7 +103,7 @@ class HBNBCommand(cmd.Cmd):
         if key not in storage.all():
             print("** no instance found **")
             return
-        del storage.all()[key]
+        storage.all()[key].delete()
         storage.save()
 
     def do_all(self, arg):
