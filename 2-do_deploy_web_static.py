@@ -2,8 +2,10 @@
 """Fabric script that distributes an archive to web servers."""
 from fabric.api import env, local, put, run, settings
 import os
+import sys
 
-env.hosts = ['52.55.249.213', '54.157.32.137']
+if not any(a.startswith(('-H', '--hosts')) for a in sys.argv):
+    env.hosts = ['52.55.249.213', '54.157.32.137']
 
 
 def do_deploy(archive_path):
