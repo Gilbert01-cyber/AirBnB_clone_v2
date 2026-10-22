@@ -1,10 +1,9 @@
 #!/usr/bin/python3
 """Fabric script that distributes an archive to web servers."""
-from fabric.api import env, put, run, settings
+from fabric.api import env, local, put, run, settings
 import os
 
-if not env.hosts:
-    env.hosts = ['52.55.249.213', '54.157.32.137']
+env.hosts = ['52.55.249.213', '54.157.32.137']
 
 
 def do_deploy(archive_path):
@@ -20,6 +19,7 @@ def do_deploy(archive_path):
     name = os.path.splitext(archive_file)[0]
     release = "/data/web_static/releases/{}".format(name)
     tmp_path = "/tmp/{}".format(archive_file)
+    on_local = env.host in ('localhost', '127.0.0.1')
 
     commands = [
         "mkdir -p {}/".format(release),
@@ -33,10 +33,16 @@ def do_deploy(archive_path):
 
     try:
         with settings(warn_only=True):
-            if put(archive_path, tmp_path).failed:
-                return False
+            if on_local:
+                runner = local
+                if local("cp {} {}".format(archive_path, tmp_path)).failed:
+                    return False
+            else:
+                runner = run
+                if put(archive_path, tmp_path).failed:
+                    return False
             for cmd in commands:
-                if run(cmd).failed:
+                if runner(cmd).failed:
                     return False
         print("New version deployed!")
         return True
