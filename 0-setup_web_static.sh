@@ -33,19 +33,11 @@ chown -R ubuntu:ubuntu /data/
 
 # Serve /data/web_static/current/ at /hbnb_static (only add it once)
 if ! grep -q "location /hbnb_static" "$CONFIG"; then
-    sed -i '/server_name _;/a\
-\
-\tlocation /hbnb_static {\
-\t\talias /data/web_static/current/;\
-\t}' "$CONFIG"
-fi
-# Fallback: if there is no "server_name _;" line, use the "server {" line
-if ! grep -q "location /hbnb_static" "$CONFIG"; then
-    sed -i '0,/^server {/s//server {\
-\tlocation \/hbnb_static {\
-\t\talias \/data\/web_static\/current\/;\
-\t}\
-/' "$CONFIG"
+    if grep -q "server_name _;" "$CONFIG"; then
+        sed -i 's|server_name _;|server_name _;\n\n\tlocation /hbnb_static {\n\t\talias /data/web_static/current/;\n\t}|' "$CONFIG"
+    else
+        sed -i '0,/^server {/s||server {\n\tlocation /hbnb_static {\n\t\talias /data/web_static/current/;\n\t}\n|' "$CONFIG"
+    fi
 fi
 
 service nginx restart
