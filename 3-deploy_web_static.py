@@ -1,10 +1,11 @@
 #!/usr/bin/python3
 """Fabric script that creates and distributes an archive to web servers."""
-from fabric.api import env
-do_pack = __import__('1-pack_web_static').do_pack
+from fabric.api import env, runs_once
+do_pack = runs_once(__import__('1-pack_web_static').do_pack)
 do_deploy = __import__('2-do_deploy_web_static').do_deploy
 
-env.hosts = ['52.55.249.213', '54.157.32.137']
+if not env.hosts:
+    env.hosts = ['52.55.249.213', '54.157.32.137']
 
 
 def deploy():
@@ -13,3 +14,4 @@ def deploy():
     if archive_path is None:
         return False
     return do_deploy(archive_path)
+    
