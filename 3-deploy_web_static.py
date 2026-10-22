@@ -4,8 +4,7 @@ from fabric.api import env, runs_once
 do_pack = runs_once(__import__('1-pack_web_static').do_pack)
 do_deploy = __import__('2-do_deploy_web_static').do_deploy
 
-if not env.hosts:
-    env.hosts = ['52.55.249.213', '54.157.32.137']
+env.hosts = ['52.55.249.213', '54.157.32.137']
 
 
 def deploy():
